@@ -4251,6 +4251,31 @@
     .ldsp-modal-btn.danger:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(224,122,141,.4)}
     .ldsp-modal-btn.danger:active{transform:translateY(0)}
     .ldsp-modal-note{margin-top:14px;font-size:11px;color:var(--txt-mut);text-align:center;font-weight:500}
+    /* 三级用户准则：面板内覆盖层（非页面弹窗） */
+    .ldsp-tl3-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--bg);border-radius:0 0 var(--r-lg) var(--r-lg);z-index:14;display:none;flex-direction:column;overflow:hidden}
+    .ldsp-tl3-overlay.show{display:flex;animation:enter var(--dur-fast) var(--ease-out)}
+    .ldsp-tl3-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0}
+    .ldsp-tl3-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--txt)}
+    .ldsp-tl3-close{width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:var(--bg-el);border:1px solid var(--border);border-radius:6px;font-size:15px;color:var(--txt-sec);cursor:pointer;transition:background .15s,color .15s;line-height:1}
+    .ldsp-tl3-close:hover{background:var(--bg-hover);color:var(--txt)}
+    .ldsp-tl3-body{flex:1;overflow-y:auto;padding:12px 14px;scrollbar-width:thin;scrollbar-color:var(--scrollbar) transparent}
+    .ldsp-tl3-body::-webkit-scrollbar{width:5px}
+    .ldsp-tl3-body::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:4px}
+    .ldsp-tl3-foot{display:flex;gap:10px;padding:10px 12px;background:var(--bg-card);border-top:1px solid var(--border);flex-shrink:0}
+    .ldsp-tl3-h{font-size:12px;font-weight:700;color:var(--txt);margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+    .ldsp-tl3-h:first-child{margin-top:0}
+    .ldsp-tl3-intro{font-size:11px;color:var(--txt-sec);line-height:1.7;margin:0 0 6px}
+    .ldsp-tl3-celebrate{font-size:12px;color:var(--txt-sec);line-height:1.7;text-align:center;margin:0 0 8px}
+    .ldsp-tl3-celebrate strong{color:var(--accent)}
+    .ldsp-tl3-note{font-size:10px;color:var(--txt-mut);line-height:1.65;margin:10px 0 0;padding:10px 12px;background:var(--bg-el);border-radius:var(--r-md);border-left:3px solid var(--accent)}
+    .ldsp-tl3-body ul{margin:8px 0;padding-left:0;list-style:none}
+    .ldsp-tl3-body li{margin:5px 0;padding-left:18px;position:relative;font-size:11px;color:var(--txt-sec);line-height:1.6}
+    .ldsp-tl3-body li::before{content:'';position:absolute;left:2px;top:7px;width:5px;height:5px;background:var(--accent);border-radius:50%}
+    .ldsp-tl3-body strong{color:var(--accent);font-weight:600}
+    .ldsp-tl3-btn{flex:1;padding:10px 14px;border:none;border-radius:var(--r-md);font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,transform .15s}
+    .ldsp-tl3-btn.primary{background:var(--grad);color:#fff;box-shadow:0 4px 15px rgba(59,130,246,.3)}
+    .ldsp-tl3-btn.primary:hover{transform:translateY(-1px)}
+    .ldsp-tl3-btn.secondary{background:var(--bg-el);color:var(--txt-sec);border:1px solid var(--border2)}
     .ldsp-confirm-overlay{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;box-sizing:border-box;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:20;opacity:0;pointer-events:none;transition:opacity .3s var(--ease);border-radius:inherit;margin:0;padding:0 20px}
     .ldsp-confirm-overlay.show{opacity:1;pointer-events:auto}
     .ldsp-confirm-box{background:var(--bg-card);border-radius:var(--r-xl);padding:24px 20px;width:100%;max-width:280px;box-shadow:0 10px 40px rgba(0,0,0,.3);transform:scale(.9) translateY(20px);transition:transform .35s var(--ease-spring);border:none;position:relative;overflow:hidden;margin:0 auto}
@@ -11656,6 +11681,11 @@ a:hover{text-decoration:underline;}
                                         <span class="ldsp-settings-nav-value" data-settings-requirements-value></span>
                                         <span class="ldsp-settings-nav-arrow">›</span>
                                     </button>
+                                    <button class="ldsp-settings-nav" data-tl3-guidelines>
+                                        <span class="ldsp-settings-nav-main">🎖️ 三级用户准则</span>
+                                        <span class="ldsp-settings-nav-value">信任等级 3</span>
+                                        <span class="ldsp-settings-nav-arrow">›</span>
+                                    </button>
                                 </div>
                                 <div class="ldsp-settings-view" data-settings-view="theme">
                                     <div class="ldsp-settings-head">
@@ -12055,6 +12085,13 @@ a:hover{text-decoration:underline;}
                     if (openBtn) {
                         const targetView = openBtn.dataset.settingsOpen;
                         if (targetView) this._setSettingsView(targetView);
+                        return;
+                    }
+
+                    const tl3Btn = e.target.closest('[data-tl3-guidelines]');
+                    if (tl3Btn) {
+                        this._hideSettingsMenu();
+                        this._showTL3Guidelines();
                         return;
                     }
 
@@ -13767,7 +13804,10 @@ a:hover{text-decoration:underline;}
             async _updateTrustLevel(connectLevel) {
                 // 同时检查 oauth 和 cloudSync.oauth 的登录状态
                 if (!this.oauth?.isLoggedIn() || !this.cloudSync?.oauth?.isLoggedIn()) return;
-                
+
+                // 检测是否达到信任等级 3（首次达成时弹出恭喜弹窗）
+                this._checkTL3Celebration(connectLevel);
+
                 const userInfo = this.oauth.getUserInfo();
                 // v3.4.7: 兼容 trust_level 和 trustLevel 两种命名格式
                 const currentLevel = userInfo?.trust_level ?? userInfo?.trustLevel;
@@ -13788,6 +13828,102 @@ a:hover{text-decoration:underline;}
                         this.oauth.setUserInfo(updatedUserInfo);
                     }
                 } catch (e) { /* 同步失败，忽略 */ }
+            }
+
+            // 三级用户准则正文 HTML
+            _tl3GuidelinesHTML() {
+                return `
+                    <p class="ldsp-tl3-intro">活跃用户是社区的支柱，是在几个月乃至几年的时间内最活跃的读者和可靠的贡献者。因为他们一直在周围，他们可以被进一步信任，以帮助整理和组织社区。</p>
+                    <div class="ldsp-tl3-h">🏅 晋升到信任等级 3（过去 100 天内）</div>
+                    <ul>
+                        <li>必须至少访问了 <strong>50%</strong> 的天数</li>
+                        <li>必须至少在 <strong>10</strong> 个不同的非私信话题上进行了回复</li>
+                        <li>在过去 100 天内创建的话题中，必须浏览了 <strong>25%</strong>（上限为 500）</li>
+                        <li>在过去 100 天内创建的帖子中，必须阅读了 <strong>25%</strong>（上限为 20k）</li>
+                        <li>必须收到 <strong>20</strong> 个点赞，并送出 <strong>30</strong> 个点赞*</li>
+                        <li>不得收到超过 <strong>5</strong> 个垃圾邮件或冒犯性标记（每个都需不同的帖子和不同的用户，并由版主确认）</li>
+                        <li>过去 6 个月内不能被暂停或禁言</li>
+                    </ul>
+                    <div class="ldsp-tl3-note">* 这些点赞必须来自不同的用户数量最少为用户数的 1/5，不同的天数最少为天数的 1/4。这些点赞不可以来自私信。<br>上述所有标准都必须满足才能达到信任等级 3。此外，与其他信任等级不同，你可以失去信任等级 3 的状态：如果在过去 100 天内你的表现低于这些要求，你将会降级回成员。为避免频繁升降级，获得信任等级 3 后有 <strong>2 周</strong> 宽限期，期间不会被降级。</div>
+                    <div class="ldsp-tl3-h">✨ 信任等级 3 的用户可以</div>
+                    <ul>
+                        <li>重新分类和重命名话题</li>
+                        <li>进入只对信任等级 3 及以上用户可见的安全类别</li>
+                        <li>他们所有的链接都会被跟踪（移除了自动 nofollow）</li>
+                        <li>TL3 对 TL0 用户帖子的垃圾邮件标记立即隐藏帖子</li>
+                        <li>TL3 对 TL0 用户帖子的足够多样化标记会自动禁言该用户并隐藏其所有帖子</li>
+                        <li>将自己的帖子变成 wiki（所有 TL1+ 用户都可以编辑）</li>
+                        <li>每天点赞、编辑和标记的限制增加了 <strong>2 倍</strong></li>
+                    </ul>`;
+            }
+
+            // 直接展示三级用户准则（设置入口触发）
+            _showTL3Guidelines() {
+                this._showTL3Overlay('guidelines');
+            }
+
+            // 检测用户达到信任等级 3，首次达成时在面板内展示恭喜覆盖层
+            _checkTL3Celebration(level) {
+                if (typeof level !== 'number' || isNaN(level) || level < 3) return;
+                if (this.storage.getGlobal('tl3Celebrated', false)) return;
+                this.storage.setGlobalNow('tl3Celebrated', true);
+                // 折叠态下先展开面板，确保覆盖层可见
+                if (this.el.classList.contains('collapsed')) {
+                    try { this._toggle(); } catch (e) {}
+                }
+                this._showTL3Overlay('celebrate');
+            }
+
+            // 构建/展示 TL3 覆盖层（挂载在脚本面板内部，非页面弹窗）
+            _showTL3Overlay(mode) {
+                const host = this.$.panelBody;
+                if (!host) return;
+                const existing = host.querySelector('.ldsp-tl3-overlay');
+                if (existing) existing.remove();
+
+                const overlay = document.createElement('div');
+                overlay.className = 'ldsp-tl3-overlay';
+                const isCelebrate = mode === 'celebrate';
+                const renderHead = (icon, title) => `
+                    <div class="ldsp-tl3-head">
+                        <div class="ldsp-tl3-title"><span>${icon}</span><span>${title}</span></div>
+                        <div class="ldsp-tl3-close" data-tl3-action="close">×</div>
+                    </div>`;
+                const renderFoot = (celebrate) => celebrate
+                    ? `<div class="ldsp-tl3-foot"><button class="ldsp-tl3-btn primary" data-tl3-action="view">📖 查看三级用户准则</button><button class="ldsp-tl3-btn secondary" data-tl3-action="close">稍后再说</button></div>`
+                    : `<div class="ldsp-tl3-foot"><button class="ldsp-tl3-btn primary" data-tl3-action="close">我知道了</button></div>`;
+                const renderBody = (celebrate) => celebrate
+                    ? `<p class="ldsp-tl3-celebrate">恭喜！你已达成 <strong>信任等级 3 – 活跃用户</strong>。</p><p class="ldsp-tl3-celebrate">你是社区的中坚力量，感谢你长期的活跃与可靠贡献。点击下方查看三级用户准则，了解你新增的权限与责任。</p>`
+                    : this._tl3GuidelinesHTML();
+
+                overlay.innerHTML = renderHead(isCelebrate ? '🎉' : '🎖️', isCelebrate ? '恭喜达成信任等级 3！' : '信任等级 3 – 活跃用户')
+                    + `<div class="ldsp-tl3-body">${renderBody(isCelebrate)}</div>`
+                    + renderFoot(isCelebrate);
+                host.appendChild(overlay);
+                requestAnimationFrame(() => overlay.classList.add('show'));
+
+                const close = () => {
+                    overlay.classList.remove('show');
+                    setTimeout(() => overlay.remove(), 200);
+                    overlay._tl3Done = true;
+                    document.removeEventListener('keydown', onKey);
+                };
+                const toGuidelines = () => {
+                    overlay.querySelector('.ldsp-tl3-title').innerHTML = '<span>🎖️</span><span>信任等级 3 – 活跃用户</span>';
+                    overlay.querySelector('.ldsp-tl3-body').innerHTML = this._tl3GuidelinesHTML();
+                    overlay.querySelector('.ldsp-tl3-foot').innerHTML = `<button class="ldsp-tl3-btn primary" data-tl3-action="close">我知道了</button>`;
+                    overlay.querySelector('.ldsp-tl3-body').scrollTop = 0;
+                };
+                overlay.addEventListener('click', e => {
+                    const btn = e.target.closest('[data-tl3-action]');
+                    if (!btn) return;
+                    if (btn.dataset.tl3Action === 'view') toGuidelines();
+                    else close();
+                });
+                const onKey = e => {
+                    if (e.key === 'Escape' && !overlay._tl3Done) close();
+                };
+                document.addEventListener('keydown', onKey);
             }
 
             // 当没有升级要求表格时显示备选内容
@@ -13831,7 +13967,10 @@ a:hover{text-decoration:underline;}
                         }
                     }
                 }
-                
+
+                // 检测是否达到信任等级 3（首次达成时弹出恭喜弹窗）
+                this._checkTL3Celebration(numLevel);
+
                 // 确保阅读追踪器已初始化（_showFallbackStats 可能在 tracker.init 之前被调用）
                 if (effectiveUsername && effectiveUsername !== '未知') {
                     if (!this.username) {
